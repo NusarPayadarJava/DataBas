@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetProvider;
 import javax.swing.*;
 import java.sql.*;
 
@@ -14,7 +16,7 @@ class inlupp2 extends JFrame implements ActionListener {
     inlupp2() {
 
         //nunu
-        tf1 = new JTextField("tf11111");
+        tf1 = new JTextField("Vägen till Väterås");
         Kundrelate = new JButton("Kundrelate (Sök Titel)");
         Administrativ = new JButton("Administrativ");
 
@@ -79,7 +81,7 @@ class inlupp2 extends JFrame implements ActionListener {
 
             Kundrelate.addActionListener(ae1 -> {
                 //***************
-                String ans,ans2="";
+                String ans="";
 
                 try {
 
@@ -92,13 +94,13 @@ class inlupp2 extends JFrame implements ActionListener {
                             stmt.executeQuery("select * FROM bok_tabel");
 
                     while ( rs.next() ) {
-
-                        ans="Bok Titel: "+rs.getString(2)+"\n"
-                        +"Författare: "+rs.getString(3)+"\n"
-                        +"Antal sidor: "+rs.getString(4)+"\n"
-                       + "klassifikation: "+rs.getString(5)+"\n"
-                       +"Hylla: "+rs.getString(6)+"\n";
-
+                        int i=2;
+                        ans="Bok Titel: "+rs.getString(i)+"\n"
+                        +"Författare: "+rs.getString(i+1)+"\n"
+                        +"Antal sidor: "+rs.getString(i+2)+"\n"
+                       + "klassifikation: "+rs.getString(i+3)+"\n"
+                       +"Hylla: "+rs.getString(i+4)+"\n";
+                        i++;
 
                         if( tf1.getText().equals( rs.getNString(2)  ) ){
                      display.setText("boken finns \n i hylla ["+rs.getNString(5)+"] \n" +ans);
@@ -123,9 +125,40 @@ class inlupp2 extends JFrame implements ActionListener {
             panel.add(Administrativ);
             panel.add(display2);
 
+            Administrativ.addActionListener(ae2 -> {
+                //***************
+                String ans2="";
+
+                try {
+                    String q="select name from kund_tabel where id IN (0,1,2) ";
+
+                        Connection con2 =
+                                DriverManager.getConnection("jdbc:mysql://localhost/upp2DB", "root", "123456");
+                        PreparedStatement stmt2 = con2.prepareStatement(q);
+
+                    ResultSet rs2 = stmt2.executeQuery();
 
 
-        } else {
+                    while (rs2.next() ) {
+
+                        ans2=rs2.getString(1);
+                        display2.setText(ans2);
+
+
+                    }
+
+                } catch (Exception e) {
+                    //display.setText(e);
+                }
+
+
+            });
+
+            //*****************
+            }
+
+
+        else {
             message.setText(" Invalid user.. ");
         }
 
